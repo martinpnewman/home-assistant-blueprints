@@ -32,7 +32,19 @@ blueprint:
           multiple: false
     delay_in_minutes:
       name: Delay in minutes
-      description: Minimum interval between recalibration events.
+      description:
+        Your thermostat will take some time to update the current temperature
+        after calibration. The delay should be higher than this time.
+      default: 1
+      selector:
+        number:
+          min: 1.0
+          max: 60.0
+          step: 1.0
+          mode: slider
+    minimum_interval:
+      name: Minimum interval
+      description:
         Your thermostat will take some time to update the current temperature
         after calibration. The delay should be higher than this time.
       default: 1
@@ -79,6 +91,11 @@ condition:
       '{{ states(temperature_sensor) != "unavailable" and states(temperature_sensor)
       != "unknown" }}'
 actions:
+  - delay:
+      hours: 0
+      minutes: !input delay_in_minutes
+      seconds: 0
+      milliseconds: 0
   - action: number.set_value
     target:
       entity_id: !input trv_calibration_number
@@ -102,6 +119,6 @@ actions:
         else -%}\n  {{ states(trv_calibration_number) }}\n{%- endif %}"
   - delay:
       hours: 0
-      minutes: !input delay_in_minutes
+      minutes: !input minimum_interval
       seconds: 0
       milliseconds: 0
