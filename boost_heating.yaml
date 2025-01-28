@@ -51,51 +51,51 @@ blueprint:
             integration: scheduler
           multiple: true
   source_url: https://github.com/martinpnewman/home-assistant-blueprints/blob/main/boost_heating.yaml
-  mode: restart
-  variables:
-    thermostat: !input thermostat
-    boost_button: !input boost_button
-    boost_time: !input boost_time
-    boost_target: !input boost_target
-    schedules: !input schedules
-  triggers:
-    - trigger: state
-      entity_id:
-        - boost_button
-      to: null
-      from: null
-  conditions: []
-  actions:
-    - if:
-        - condition: state
-          entity_id: !input boost_button
-          state: "on"
-      then:
-        - action: switch.turn_off
-          metadata: {}
-          data: {}
-          target:
-            entity_id: !input schedules
-        - action: climate.set_temperature
-          metadata: {}
-          data:
-            temperature: >-
-              {{ 5 | float(0) + state_attr(thermostat,
-              'current_temperature') | float(0) }}
-          target:
-            entity_id: !input thermostat
-        - delay:
-            hours: 0
-            minutes: 30
-            seconds: 0
-            milliseconds: 0
-    - action: input_boolean.turn_off
-      metadata: {}
-      data: {}
-      target:
+mode: restart
+variables:
+  thermostat: !input thermostat
+  boost_button: !input boost_button
+  boost_time: !input boost_time
+  boost_target: !input boost_target
+  schedules: !input schedules
+triggers:
+  - trigger: state
+    entity_id:
+      - boost_button
+    to: null
+    from: null
+conditions: []
+actions:
+  - if:
+      - condition: state
         entity_id: !input boost_button
-    - action: switch.turn_on
-      metadata: {}
-      data: {}
-      target:
-        entity_id: !input boost_button
+        state: "on"
+    then:
+      - action: switch.turn_off
+        metadata: {}
+        data: {}
+        target:
+          entity_id: !input schedules
+      - action: climate.set_temperature
+        metadata: {}
+        data:
+          temperature: >-
+            {{ 5 | float(0) + state_attr(thermostat,
+            'current_temperature') | float(0) }}
+        target:
+          entity_id: !input thermostat
+      - delay:
+          hours: 0
+          minutes: 30
+          seconds: 0
+          milliseconds: 0
+  - action: input_boolean.turn_off
+    metadata: {}
+    data: {}
+    target:
+      entity_id: !input boost_button
+  - action: switch.turn_on
+    metadata: {}
+    data: {}
+    target:
+      entity_id: !input boost_button
